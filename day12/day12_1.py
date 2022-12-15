@@ -9,10 +9,11 @@ def find_char(char):
     global lines
     global width
     index = "".join(lines).find(char)
-    return [index % width, math.floor(index / width)]
+    return (index % width, math.floor(index / width))
 
 start = find_char("S")
 end = find_char("E")
+print(start, end)
 
 def get_value(coord):
     if coord[0] >= width or coord[0] < 0 or coord[1] >= len(lines) or coord[1] < 0:
@@ -31,7 +32,7 @@ def get_dist(coord):
     return math.sqrt((end[0] - coord[0]) ** 2 + (end[1] - coord[1]) ** 2)
 
 def get_neighbors(coord):
-    n = [[coord[0] + 1, coord[1]], [coord[0] - 1, coord[1]], [coord[0], coord[1] + 1], [coord[0], coord[1] - 1]]
+    n = [(coord[0] + 1, coord[1]), (coord[0] - 1, coord[1]), (coord[0], coord[1] + 1), (coord[0], coord[1] - 1)]
     output = []
     curr_val = get_value(coord)
     for c in n:
@@ -41,36 +42,22 @@ def get_neighbors(coord):
     output.sort(key=get_dist)
     return(output)
 
-shortest_path = 99999999
+def bfs(root):
+    length = 0
+    visited = set()
+    current = [root]
+    queued = set()
+    while True:
+        while len(current) != 0:
+            target = current.pop()
+            visited.add(target)
+            if target == end:
+                return length
+            for neighbor in get_neighbors(target):
+                if not neighbor in visited:
+                    queued.add(neighbor)
+        current = queued.copy()
+        queued.clear()
+        length += 1
 
-def dfs(coord, path, length):
-    global shortest_path
-    # print(path)
-    # print(coord)
-    if coord == end:
-        if length < shortest_path:
-            shortest_path = length
-        print(shortest_path)
-        return length
-    if coord in path:
-        return
-    new_path = path.copy()
-    new_path.append(coord)
-    length += 1
-    if length > shortest_path:
-        return
-    results = []
-    for neighbor in get_neighbors(coord):
-        result = dfs(neighbor, new_path, length)
-        if result:
-            results.append(result)
-    if not results:
-        return
-    # print(results)
-    return sorted(results)[0]
-    # return results
-
-print(dfs(start, [], 0))
-# print(start, end)
-# print(get_neighbors([0, 4]))
-# print(get_neighbors([0, 2]))
+print(bfs(start))
