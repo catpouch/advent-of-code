@@ -11,9 +11,7 @@ def find_char(char):
     index = "".join(lines).find(char)
     return (index % width, math.floor(index / width))
 
-start = find_char("S")
-end = find_char("E")
-print(start, end)
+start = find_char("E")
 
 def get_value(coord):
     if coord[0] >= width or coord[0] < 0 or coord[1] >= len(lines) or coord[1] < 0:
@@ -34,7 +32,7 @@ def get_neighbors(coord):
     curr_val = get_value(coord)
     for c in n:
         val = get_value(c)
-        if not (val > curr_val + 1 or val == -1):
+        if not (val < curr_val - 1 or val == -1):
             output.append(c)
     return(output)
 
@@ -47,7 +45,7 @@ def bfs(root):
         while len(current) > 0:
             target = current.pop()
             visited.add(target)
-            if target == end:
+            if get_value(target) == 1:
                 return length
             for neighbor in get_neighbors(target):
                 if not neighbor in visited:
