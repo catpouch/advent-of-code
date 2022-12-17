@@ -2,6 +2,7 @@ f = open("day14.txt", "r")
 
 rock = set()
 sand = set()
+min_y = 0
 
 def fill_line(a, b):
     if a[0] == b[0]:
@@ -22,36 +23,28 @@ for line in f.readlines():
 
 combined = rock.copy()
 
+max_y = sorted(rock, key=lambda x: x[1], reverse=True)[0][1] + 2
+
 def add_coords(a, b):
     return (a[0]+b[0], a[1]+b[1])
 
 def iterate(pos):
-    filtered = list(filter(lambda p: p[0] == pos[0] and p[1] >= pos[1], combined))
-    if len(filtered) == 0:
+    offsets = [(0, 1), (-1, 1), (1, 1)]
+    if pos[1] == max_y - 1:
         return -1
-    else:
-        nearest_floor = sorted(filtered, key=lambda x: x[1])[0]
-        nearest_floor = (nearest_floor[0], nearest_floor[1] - 1)
-    offsets = [(-1, 1), (1, 1)]
-    if nearest_floor != pos:
-        return nearest_floor
     for offset in offsets:
         new = add_coords(pos, offset)
         if not new in combined:
             return new
-    return -2
+    return -1
 
 def sim_sand():
     global sand
-    finished = False
-    while not finished:
+    while not (500, 0) in sand:
         sand_pos = (500, 0)
         while True:
             new_pos = iterate(sand_pos)
             if new_pos == -1:
-                finished = True
-                break
-            if new_pos == -2:
                 sand.add(sand_pos)
                 combined.add(sand_pos)
                 break
