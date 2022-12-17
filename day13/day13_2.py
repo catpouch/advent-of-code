@@ -1,11 +1,15 @@
 import ast
 
 f = open("day13.txt", "r")
+text = f.read()
+text += "\n[[2]]\n[[6]]"
 
 packets = []
-for lines in f.read().split("\n\n"):
-    pair = lines.split("\n")
-    packets.append((ast.literal_eval(pair[0]), ast.literal_eval(pair[1])))
+for line in text.split("\n"):
+    if not line:
+        continue
+    packet = ast.literal_eval(line)
+    packets.append(packet)
 
 def dfs(left, right):
     if isinstance(left, int) and isinstance(right, int):
@@ -32,9 +36,10 @@ def dfs(left, right):
         else:
             return dfs(left, [right])
 
-total = 0
-for index, packet in enumerate(packets):
-    if dfs(packet[0], packet[1]):
-        total += index + 1
+for _ in range(len(packets)):
+    for index in range(len(packets) - 1):
+        if not dfs(packets[index], packets[index + 1]):
+            a = packets.pop(index)
+            packets.insert(index + 1, a)
 
-print(total)
+print((packets.index([[2]]) + 1) * (packets.index([[6]]) + 1))
